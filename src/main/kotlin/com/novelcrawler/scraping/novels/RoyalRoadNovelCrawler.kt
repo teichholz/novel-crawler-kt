@@ -11,7 +11,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 
-context(SeleniumDriver, HasSite)
+context(HasSite, SeleniumDriver)
 class RoyalRoadNovelCrawler : NovelCrawler {
     val logger by LoggerDelegate()
 
@@ -22,15 +22,14 @@ class RoyalRoadNovelCrawler : NovelCrawler {
 
     override fun getNovels(alreadyProcessed: Int): Sequence<NovelDto> {
         val startPage = alreadyProcessed / NOVELS_PER_PAGE + FIRST_PAGE_INDEX
-        val skipNovelsCurrentPage = alreadyProcessed - startPage * NOVELS_PER_PAGE
 
-        return (startPage..10).asSequence()
+        return (startPage..2).asSequence()
             .flatMap { getNovels(page(it)) }
             .map {  novel ->
                 novel.copy(chapters = chapters(novel)).also {
                     logger.info("Parsed ${it.chapters.size} chapters for ${it.name}")
                 }
-            }.drop(skipNovelsCurrentPage)
+            }
     }
 
     fun getNovels(pageUrl: String): List<NovelDto> {

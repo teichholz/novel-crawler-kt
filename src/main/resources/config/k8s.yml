@@ -1,0 +1,6 @@
+database:
+   host: "jdbc:postgresql://teichserver:5432/postgres?currentSchema=crawler&user=postgres&password=postgrespassword"
+   port: 5432
+   user: "postgres"
+   password: "postgrespassword"
+env: k8s

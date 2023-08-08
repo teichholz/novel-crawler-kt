@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: novel-crawler-kt
+  name: novel-crawler-kt
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: novel-crawler-kt
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: novel-crawler-kt
+    spec:
+      containers:
+        - env:
+            - name: NOVEL_CRAWLER_ENV
+              value: k8s
+          image: localhost:32000/novel-crawler-kt:latest
+          name: novel-crawler-kt
+          # ports:
+          #   - containerPort: 5432
+          #     hostPort: 5432
+          #     protocol: TCP
+          resources: {}
+      restartPolicy: Always
+status: {}

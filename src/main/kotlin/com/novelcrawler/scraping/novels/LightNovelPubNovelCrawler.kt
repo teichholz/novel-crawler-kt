@@ -10,7 +10,7 @@ import org.openqa.selenium.WebElement
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-context(SeleniumDriver, HasSite)
+context(HasSite, SeleniumDriver)
 class LightNovelPubNovelCrawler : NovelCrawler {
     val logger by LoggerDelegate()
 

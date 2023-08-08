@@ -20,6 +20,13 @@ flyway {
     defaultSchema = "crawler"
 }
 
+ktor {
+    docker {
+        localImageName.set("192.168.0.189:32000/novel-crawler-kt")
+        imageTag.set("latest")
+    }
+}
+
 group = "com.novel-crawler"
 version = "0.0.1"
 application {
@@ -50,12 +57,6 @@ dependencies {
     implementation("org.jetbrains.exposed", "exposed-jdbc", "0.40.1")
     implementation("org.jetbrains.exposed:exposed-java-time:0.40.1")
 
-    // scheduled tasks
-    implementation("org.drewcarlson:kjob-core:0.6.0")
-    implementation("org.drewcarlson:kjob-kron:0.6.0")
-    implementation("org.drewcarlson:kjob-jdbi:0.6.0")
-    implementation("org.drewcarlson:kjob-api:0.6.0")
-
     // logging
     implementation("org.slf4j:slf4j-api:$slf4j_version")
     implementation("ch.qos.logback:logback-classic:$logback_version")
@@ -65,6 +66,8 @@ dependencies {
     implementation("io.arrow-kt:arrow-core:1.2.0-RC")
     implementation("io.arrow-kt:arrow-resilience:1.2.0-RC")
     implementation("io.arrow-kt:arrow-fx-coroutines:1.2.0-RC")
+    implementation("io.arrow-kt:suspendapp-jvm:0.4.0")
+    implementation("io.arrow-kt:suspendapp-ktor-jvm:0.4.0")
 
     // hoplite config
     implementation("com.sksamuel.hoplite:hoplite-core:2.7.3")

@@ -13,7 +13,7 @@ import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransacti
 import org.koin.core.component.KoinComponent
 
 
-class NovelRepository : KoinComponent {
+class NovelRepository {
 
     suspend fun save(novelDto: NovelDto): Novel {
         return transaction {

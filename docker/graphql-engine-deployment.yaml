@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.30.0 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: graphql-engine
+  name: graphql-engine
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: graphql-engine
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.30.0 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/docker-default: "true"
+        io.kompose.service: graphql-engine
+    spec:
+      containers:
+        - env:
+            - name: HASURA_GRAPHQL_DEV_MODE
+              value: "true"
+            - name: HASURA_GRAPHQL_ENABLED_LOG_TYPES
+              value: startup, http-log, webhook-log, websocket-log, query-log
+            - name: HASURA_GRAPHQL_ENABLE_CONSOLE
+              value: "true"
+            - name: HASURA_GRAPHQL_METADATA_DATABASE_URL
+              value: postgres://postgres:postgrespassword@postgres.default:5432/postgres
+            - name: HASURA_GRAPHQL_METADATA_DEFAULTS
+              value: '{"backend_configs":{"dataconnector":{"athena":{"uri":"http://data-connector-agent.default:8081/api/v1/athena"},"mariadb":{"uri":"http://data-connector-agent.default:8081/api/v1/mariadb"},"mysql8":{"uri":"http://data-connector-agent.default:8081/api/v1/mysql"},"oracle":{"uri":"http://data-connector-agent.default:8081/api/v1/oracle"},"snowflake":{"uri":"http://data-connector-agent.default:8081/api/v1/snowflake"}}}}'
+            - name: PG_DATABASE_URL
+              value: postgres://postgres:postgrespassword@postgres.default:5432/postgres
+          image: hasura/graphql-engine:v2.24.1
+          name: graphql-engine
+          ports:
+            - containerPort: 8080
+              hostPort: 8080
+              protocol: TCP
+          resources: {}
+      restartPolicy: Always
+status: {}

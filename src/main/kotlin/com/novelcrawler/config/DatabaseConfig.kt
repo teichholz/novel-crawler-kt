@@ -1,20 +1,21 @@
 package com.novelcrawler.config
 
 import arrow.core.raise.Raise
+import arrow.core.raise.ensureNotNull
+import arrow.core.raise.zipOrAccumulate
 import org.h2.jdbcx.JdbcDataSource
 import org.postgresql.ds.PGSimpleDataSource
 import javax.sql.DataSource
 
 data class DatabaseConfig(val host: String?, val port: Int?, val user: String?, val password: String?, val database: String?)
 
-data class MissingDatabaseConfiguration(var msg: String) : Throwable(createMsg(msg)) {
-    init {
-        msg = super.message!!
-    }
+data class MissingDatabaseConfiguration(var msg: String) {
+    fun createMsg(): String = "Missing database configuration for the following fields: ${msg}"
 
     companion object {
-        fun createMsg(name: String): String = "Missing database configuration for $name. " +
-                "If you intend to use the h2 database you do not need to specify any configuration."
+        fun combine(that: MissingDatabaseConfiguration, other: MissingDatabaseConfiguration): MissingDatabaseConfiguration {
+            return MissingDatabaseConfiguration("${that.msg}, ${other.msg}")
+        }
     }
 }
 
@@ -34,14 +35,21 @@ fun connect(cfg: DatabaseConfig?): DatabaseConnectionInformation {
 
         DatabaseConnectionInformation(source, true)
     } else {
-        val url = cfg.host ?: raise(MissingDatabaseConfiguration("url"))
-        val user = cfg.user ?: raise(MissingDatabaseConfiguration("user"))
-        val password = cfg.password ?: raise(MissingDatabaseConfiguration("password"))
-        val source = PGSimpleDataSource()
-        source.setURL(url)
-        source.user = user
-        source.password = password
+        zipOrAccumulate(
+            MissingDatabaseConfiguration::combine,
+            { lift(cfg::host, "Host") },
+            { lift(cfg::user, "User") },
+            { lift(cfg::password, "Password") },
+        ) { url, user, password ->
+            val source = PGSimpleDataSource()
+            source.setURL(url)
+            source.user = user
+            source.password = password
 
-        DatabaseConnectionInformation(source, false)
+            DatabaseConnectionInformation(source, false)
+        }
     }
 }
+
+fun Raise<MissingDatabaseConfiguration>.lift(block: () -> String?, err: String): String =
+    ensureNotNull(block()) { raise(MissingDatabaseConfiguration(err)) }

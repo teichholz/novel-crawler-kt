@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: firefox-grid
+  name: firefox-grid
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: firefox-grid
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: firefox-grid
+    spec:
+      containers:
+        - env:
+            - name: DUUMY
+              value: "dummy"
+          image: selenium/standalone-firefox:4.9.0
+          name: firefox-grid
+          ports:
+            - containerPort: 4444
+              # hostPort: 4444
+              # protocol: TCP
+            - containerPort: 7900
+            #   hostPort: 7900
+            #   protocol: TCP
+          resources: {}
+      restartPolicy: Always
+status: {}

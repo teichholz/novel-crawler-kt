@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.30.0 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: data-connector-agent
+  name: data-connector-agent
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: data-connector-agent
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.30.0 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/docker-default: "true"
+        io.kompose.service: data-connector-agent
+    spec:
+      containers:
+        - env:
+            - name: QUARKUS_LOG_LEVEL
+              value: ERROR
+            - name: QUARKUS_OPENTELEMETRY_ENABLED
+              value: "false"
+          image: hasura/graphql-data-connector:v2.23.0
+          livenessProbe:
+            exec:
+              command:
+                - curl
+                - -f
+                - http://localhost:8081/api/v1/athena/health
+            failureThreshold: 5
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 10
+          name: data-connector-agent
+          ports:
+            - containerPort: 8081
+              hostPort: 8081
+              protocol: TCP
+          resources: {}
+      restartPolicy: Always
+status: {}
