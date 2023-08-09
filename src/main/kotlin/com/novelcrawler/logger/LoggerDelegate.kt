@@ -11,6 +11,9 @@ class LoggerDelegate<in R : Any> : ReadOnlyProperty<R, Logger> {
             = getLogger(getClassForLogging(thisRef.javaClass))
 }
 
+fun getLogger(name: String): Logger =
+    LoggerFactory.getLogger(name)
+
 fun getLogger(forClass: Class<*>): Logger =
     LoggerFactory.getLogger(forClass)
 
